@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 8.0.x
     # restore NuGet packages
     - name: Restore dependencies
-      run: dotnet retore
+      run: dotnet restore
     # build the project
     - name: Build
       run: dotnet build --no-restore
