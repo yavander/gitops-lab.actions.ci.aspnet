@@ -1,0 +1,31 @@
+name: DeployToAzureWebApp
+on:
+  workflow_run:
+    workflows: ["Build-and-Test"]
+    types:
+      - completed
+env:
+  app-name: "web-Yanis-Vanderveken"
+  rg-name: "RG1-Vanderveken-Yanis"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download a Build Artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: cibuild.yml
+          name: publish
+          path: ${{runner.temp}}/artifact
+      - name: login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+      - name: Deploy web app
+        id: deploywebapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{env.app-name}}
+          package: ${{runner.temp}}/artifact
+      - name: az cli logout
+        run: az logout
